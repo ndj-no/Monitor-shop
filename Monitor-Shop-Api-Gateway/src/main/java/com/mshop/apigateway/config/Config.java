@@ -24,17 +24,4 @@ public class Config {
         return new CorsWebFilter(corsConfigurationSource);
     }
 
-    @Bean
-    public LoggingGatewayFilterFactory loggingGatewayFilterFactory() {
-        return new LoggingGatewayFilterFactory();
-    }
-
-    @Bean
-    public GlobalFilter customGlobalFilter() {
-        return (exchange, chain) -> {
-            // This is just a placeholder for the global filter
-            return chain.filter(exchange);
-        };
-    }
-
 }
