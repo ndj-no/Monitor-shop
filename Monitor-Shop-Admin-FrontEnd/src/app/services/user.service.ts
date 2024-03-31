@@ -32,6 +32,6 @@ export class UserService {
   }
 
   login(login: Login) {
-    return this.httpClient.post(this.urlAuthentication+'/admin/login', login);
+    return this.httpClient.post(this.urlAuthentication+'/login/admin', login);
   }
 }

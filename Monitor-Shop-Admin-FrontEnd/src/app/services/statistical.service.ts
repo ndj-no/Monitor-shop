@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class StatisticalService {
 
-  url = 'http://localhost:9090/statistical/api';
+  url = 'http://localhost:9090/api/statistical';
 
   constructor(private httpClient: HttpClient) { }
 

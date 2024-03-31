@@ -12,46 +12,45 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: cart
+        - id: login
           uri: http://localhost:8081
+          predicates:
+            - Path=/api/login/**
+        - id: users
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/users/**
+
+        - id: cart
+          uri: http://localhost:8082
           predicates:
             - Path=/api/cart/**
         - id: categories
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/categories/**
         - id: orders
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/orders/**
         - id: order-detail
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/order-detail/**
         - id: products
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/products/**
         - id: rates
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/rates/**
         - id: statistical
-          uri: http://localhost:8081
-          predicates:
-            - Path=/statistical/api/**
-
-        - id: login admin
           uri: http://localhost:8082
           predicates:
-            - Path=/api/admin/**
+            - Path=/api/statistical/**
 
-        - id: login users
-          uri: http://localhost:8082
+        - id: push
+          uri: http://localhost:8083
           predicates:
-            - Path=/api/user/**
-
-        - id: users
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/users/**
+            - Path=/api/send-mail/**

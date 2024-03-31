@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: bitnami/mysql:8.3.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    command:
+      redis-server --requirepass "123456"
+    ports:
+      - '6379:6379'
