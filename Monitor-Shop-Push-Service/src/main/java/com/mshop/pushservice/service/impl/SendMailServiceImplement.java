@@ -1,30 +1,41 @@
 package com.mshop.pushservice.service.impl;
 
+import com.mshop.pushservice.constant.Constants;
+import com.mshop.pushservice.constant.Utils;
 import com.mshop.pushservice.dto.MailInfo;
 import com.mshop.pushservice.service.SendMailService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
+@Slf4j
 public class SendMailServiceImplement implements SendMailService {
+
     @Autowired
     JavaMailSender sender;
 
-    List<MailInfo> list = new ArrayList<>();
+    @RabbitListener(queues = Constants.EMAIL_QUEUE)
+    public void consumeSendMailMsg(String msg) {
+        MailInfo mailInfo = Utils.convertFromJson(msg, MailInfo.class);
+        try {
+            send(mailInfo);
+            log.info("Da gui mail toi: {}. Tieu de: {}", mailInfo.getTo(), mailInfo.getSubject());
+        } catch (Exception e) {
+            log.error("Co loi khi gui mail", e);
+        }
+    }
 
     @Override
-    public void send(MailInfo mail) throws MessagingException, IOException {
+    public void send(MailInfo mail) throws MessagingException {
         // Tạo message
         MimeMessage message = sender.createMimeMessage();
         // Sử dụng Helper để thiết lập các thông tin cần thiết cho message
@@ -45,26 +56,4 @@ public class SendMailServiceImplement implements SendMailService {
 
     }
 
-    @Override
-    public void queue(MailInfo mail) {
-        list.add(mail);
-    }
-
-    @Override
-    public void queue(String to, String subject, String body) {
-        queue(new MailInfo(to, subject, body));
-    }
-
-    @Override
-    @Scheduled(fixedDelay = 5000)
-    public void run() {
-        while (!list.isEmpty()) {
-            MailInfo mail = list.remove(0);
-            try {
-                this.send(mail);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

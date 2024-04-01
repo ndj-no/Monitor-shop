@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @GetMapping("/exist-by-email")
-    public Boolean existByUserId(@RequestParam("email") String email) {
+    public Boolean existByEmail(@RequestParam("email") String email) {
         return userService.existsByEmail(email);
     }
 

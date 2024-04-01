@@ -17,3 +17,14 @@ services:
       redis-server --requirepass "123456"
     ports:
       - '6379:6379'
+
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_USERNAME=mshop
+      - RABBITMQ_PASSWORD=123456
+      - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
