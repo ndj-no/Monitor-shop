@@ -8,8 +8,8 @@ import { Login } from '../common/Login';
 })
 export class CustomerService {
 
-  url = 'http://localhost:8989/api/users';
-  urlAuthentication = 'http://localhost:8989/api';
+  url = 'http://localhost:9090/api/users';
+  urlAuthentication = 'http://localhost:9090/api';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -30,7 +30,7 @@ export class CustomerService {
   }
 
   login(login: Login) {
-    return this.httpClient.post(this.urlAuthentication+'/user/login', login);
+    return this.httpClient.post(this.urlAuthentication+'/login/user', login);
   }
 
   signIn(user: Customer) {

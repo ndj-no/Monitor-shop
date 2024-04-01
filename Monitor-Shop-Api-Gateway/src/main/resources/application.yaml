@@ -25,6 +25,10 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/cart/**
+        - id: cart detail
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/cart-detail/**
         - id: categories
           uri: http://localhost:8082
           predicates:
@@ -45,6 +49,10 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/rates/**
+        - id: orders
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/orders/**
         - id: statistical
           uri: http://localhost:8082
           predicates:

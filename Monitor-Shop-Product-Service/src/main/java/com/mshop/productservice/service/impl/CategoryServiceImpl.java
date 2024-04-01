@@ -18,6 +18,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
 	@Cacheable(cacheNames = "monitor.shop.categories", keyGenerator = "redisKeyGenerator")
+	// redis caching
 	public List<Category> findByStatusTrue() {
         return categoryRepository.findByStatusTrue();
     }

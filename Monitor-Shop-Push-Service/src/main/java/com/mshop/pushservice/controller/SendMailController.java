@@ -81,6 +81,7 @@ public class SendMailController {
                 + "        <h3>Mã OTP của bạn là: <span style=\"color:red; font-weight: bold;\">" + Otp
                 + "</span></h3>\r\n" + "    </div>";
 
+        // message queue: gui message
         MailInfo mailInfo = new MailInfo(email, title, body);
         rabbitMQTemplate.convertAndSend(Constants.EMAIL_QUEUE, Utils.convertToJsonString(mailInfo));
         System.out.println("send email to" + email);
@@ -118,6 +119,7 @@ public class SendMailController {
                 + "                <p style=\"font-family: Arial, Helvetica, sans-serif; font-weight: bold;\">Chúc bạn 1 ngày mới vui vẻ!</p>\r\n"
                 + "            </div> \r\n" + "        </div>\r\n" + "    </div>");
 
+        // message queue: gui message
         MailInfo mailInfo = new MailInfo(order.getUser().getEmail(), title, content.toString());
         rabbitMQTemplate.convertAndSend(Constants.EMAIL_QUEUE, Utils.convertToJsonString(mailInfo));
     }

@@ -24,6 +24,7 @@ public class SendMailServiceImplement implements SendMailService {
     JavaMailSender sender;
 
     @RabbitListener(queues = Constants.EMAIL_QUEUE)
+    // message queue: xu ly message
     public void consumeSendMailMsg(String msg) {
         MailInfo mailInfo = Utils.convertFromJson(msg, MailInfo.class);
         try {

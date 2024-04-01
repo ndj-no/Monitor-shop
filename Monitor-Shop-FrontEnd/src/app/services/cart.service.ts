@@ -10,9 +10,9 @@ import { OrderDetail } from '../common/OrderDetail';
   providedIn: 'root'
 })
 export class CartService {
-  urlC = 'http://localhost:8989/api/cart';
+  urlC = 'http://localhost:9090/api/cart';
 
-  urlD = 'http://localhost:8989/api/cart-detail';
+  urlD = 'http://localhost:9090/api/cart-detail';
 
   totalCartItems: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   $data: Observable<number> = this.totalCartItems.asObservable();

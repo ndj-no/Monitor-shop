@@ -7,7 +7,7 @@ import { Rate } from '../common/Rate';
 })
 export class RateService {
 
-  url = 'http://localhost:8989/api/rates'
+  url = 'http://localhost:9090/api/rates'
 
   constructor(private httpClient: HttpClient) { }
 
