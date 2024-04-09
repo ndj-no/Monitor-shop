@@ -28,3 +28,15 @@ services:
       - RABBITMQ_USERNAME=mshop
       - RABBITMQ_PASSWORD=123456
       - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
+
+  minio:
+    image: 'bitnami/minio:latest'
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - './minio-data:/bitnami/minio/data'
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
