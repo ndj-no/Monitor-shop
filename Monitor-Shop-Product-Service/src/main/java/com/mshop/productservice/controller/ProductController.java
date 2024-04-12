@@ -1,5 +1,6 @@
 package com.mshop.productservice.controller;
 
+import com.mshop.productservice.client.FileClient;
 import com.mshop.productservice.entity.Product;
 import com.mshop.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,8 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<Product>> getAll() {
-        return ResponseEntity.ok(productService.findAllStatus());
+        List<Product> products = productService.setProductImage(productService.findAllStatus());
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("{id}")
@@ -36,6 +38,7 @@ public class ProductController {
         if (!check) {
             return ResponseEntity.notFound().build();
         }
+        productService.setProductImage(product);
         return ResponseEntity.ok(product);
     }
 
@@ -44,6 +47,7 @@ public class ProductController {
         if (productService.existsById(product.getProductId())) {
             return ResponseEntity.badRequest().build();
         }
+        productService.saveProductImage(product);
         return ResponseEntity.ok(productService.save(product));
     }
 
@@ -55,6 +59,7 @@ public class ProductController {
         if (!productService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        productService.saveProductImage(product);
         return ResponseEntity.ok(productService.save(product));
     }
 
@@ -66,13 +71,16 @@ public class ProductController {
         Product pro = productService.findById(id).get();
         pro.setStatus(false);
         productService.save(pro);
-//		repo.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/by-category/{id}")
     public ResponseEntity<List<Product>> getAllByCategory(@PathVariable("id") Long id) {
 //		System.out.println(repo.findAllProductByCategoryId(id));
-        return ResponseEntity.ok(productService.findAllProductByCategoryId(id));
+        List<Product> products = productService.findAllProductByCategoryId(id);
+        productService.setProductImage(products);
+        return ResponseEntity.ok(products);
     }
+
+
 }

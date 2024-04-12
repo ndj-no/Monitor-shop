@@ -2,6 +2,7 @@ package com.mshop.fileservice.service;
 
 import io.minio.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,9 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String saveFileString(String base64) throws Exception {
+        if (ObjectUtils.isEmpty(base64)) {
+            return null;
+        }
         byte[] bytes = base64.getBytes();
         try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
             PutObjectArgs args = PutObjectArgs.builder()
@@ -38,6 +44,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String readFileString(String key) throws Exception {
+        if (ObjectUtils.isEmpty(key)) {
+            return null;
+        }
         try (InputStream stream = minioClient.getObject(
                 GetObjectArgs
                         .builder()
@@ -47,6 +56,26 @@ public class FileServiceImpl implements FileService {
             byte[] bytes = stream.readAllBytes();
             return new String(bytes);
         }
+    }
+
+    @Override
+    public Map<String, String> readFileStrings(List<String> keys) throws Exception {
+        if (ObjectUtils.isEmpty(keys)) {
+            return null;
+        }
+        Map<String, String> map = new HashMap<>();
+        for (String key : keys) {
+            try (InputStream stream = minioClient.getObject(
+                    GetObjectArgs
+                            .builder()
+                            .bucket(bucket)
+                            .object(key)
+                            .build())) {
+                byte[] bytes = stream.readAllBytes();
+                map.put(key, new String(bytes));
+            }
+        }
+        return map;
     }
 
     @Override

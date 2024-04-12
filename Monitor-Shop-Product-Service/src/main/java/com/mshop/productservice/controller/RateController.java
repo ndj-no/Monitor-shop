@@ -1,9 +1,13 @@
 package com.mshop.productservice.controller;
 
+import com.mshop.productservice.entity.Product;
 import com.mshop.productservice.entity.Rate;
+import com.mshop.productservice.service.ProductService;
 import com.mshop.productservice.service.RateService;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +19,16 @@ public class RateController {
     @Autowired
     RateService rateService;
 
+    @Autowired
+    ProductService productService;
+
     @GetMapping()
+    @Transactional(readOnly = true)
     public ResponseEntity<List<Rate>> getAll() {
-        return ResponseEntity.ok(rateService.findAll());
+        List<Rate> rates = rateService.findAll();
+        List<Product> products = StreamEx.of(rates).map(Rate::getProduct).toList();
+        productService.setProductImage(products);
+        return ResponseEntity.ok(rates);
     }
 
     @GetMapping("{id}")
@@ -25,12 +36,17 @@ public class RateController {
         if (!rateService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(rateService.findById(id).get());
+        Rate rate = rateService.findById(id).get();
+        productService.setProductImage(rate.getProduct());
+        return ResponseEntity.ok(rate);
     }
 
     @GetMapping("product/{id}")
     public ResponseEntity<List<Rate>> getByProduct(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(rateService.findByProduct(id));
+        List<Rate> rates = rateService.findByProduct(id);
+        List<Product> products = StreamEx.of(rates).map(Rate::getProduct).toList();
+        productService.setProductImage(products);
+        return ResponseEntity.ok(rates);
     }
 
     @GetMapping("product-avg/{id}")
@@ -45,6 +61,7 @@ public class RateController {
 
     @PostMapping()
     public ResponseEntity<Rate> post(@RequestBody Rate rate) {
+        productService.setProductImage(rate.getProduct());
         return ResponseEntity.ok(rateService.save(rate));
     }
 

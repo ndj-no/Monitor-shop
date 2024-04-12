@@ -5,6 +5,7 @@ import com.mshop.productservice.entity.Product;
 import com.mshop.productservice.service.CartDetailService;
 import com.mshop.productservice.service.CartService;
 import com.mshop.productservice.service.ProductService;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,10 @@ public class CartDetailController {
         if (!cartService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(cartDetailService.getByCartId(id));
+        List<CartDetail> cartDetails = cartDetailService.getByCartId(id);
+        List<Product> products = StreamEx.of(cartDetails).map(CartDetail::getProduct).toList();
+        productService.setProductImage(products);
+        return ResponseEntity.ok(cartDetails);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
@@ -37,7 +41,9 @@ public class CartDetailController {
         if (!cartDetailService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(cartDetailService.findById(id).get());
+        CartDetail cartDetail = cartDetailService.findById(id).get();
+        productService.setProductImage(cartDetail.getProduct());
+        return ResponseEntity.ok(cartDetail);
     }
 
     @PostMapping()
@@ -53,7 +59,6 @@ public class CartDetailController {
                 check = true;
             }
         }
-        ;
         if (!check) {
             return ResponseEntity.notFound().build();
         }
@@ -62,9 +67,11 @@ public class CartDetailController {
             if (item.getProduct().getProductId() == detail.getProduct().getProductId()) {
                 item.setQuantity(item.getQuantity() + 1);
                 item.setPrice(item.getPrice() + detail.getPrice());
+                productService.setProductImage(item.getProduct());
                 return ResponseEntity.ok(cartDetailService.save(item));
             }
         }
+        productService.setProductImage(detail.getProduct());
         return ResponseEntity.ok(cartDetailService.save(detail));
     }
 
@@ -73,7 +80,9 @@ public class CartDetailController {
         if (!cartService.existsById(detail.getCart().getId())) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(cartDetailService.save(detail));
+        CartDetail cartDetail = cartDetailService.save(detail);
+        productService.setProductImage(cartDetail.getProduct());
+        return ResponseEntity.ok(cartDetail);
     }
 
     @DeleteMapping("{id}")

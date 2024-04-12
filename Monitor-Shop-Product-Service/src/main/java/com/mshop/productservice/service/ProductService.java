@@ -17,4 +17,11 @@ public interface ProductService {
     public Optional<Product> findById(Long id);
 
     public Boolean existsById(Long id);
+
+    Product saveProductImage(Product product);
+
+    Product setProductImage(Product product);
+
+    List<Product> setProductImage(List<Product> products);
+
 }

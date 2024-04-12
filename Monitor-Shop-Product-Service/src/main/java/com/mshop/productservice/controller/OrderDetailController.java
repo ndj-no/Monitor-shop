@@ -1,8 +1,11 @@
 package com.mshop.productservice.controller;
 
 import com.mshop.productservice.entity.OrderDetail;
+import com.mshop.productservice.entity.Product;
 import com.mshop.productservice.service.OrderDetailService;
 import com.mshop.productservice.service.OrderService;
+import com.mshop.productservice.service.ProductService;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +21,17 @@ public class OrderDetailController {
     @Autowired
     OrderService Orepo;
 
+    @Autowired
+    ProductService productService;
+
     @GetMapping("{id}")
     public ResponseEntity<OrderDetail> get(@PathVariable("id") Long id) {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+        OrderDetail orderDetail = repo.findById(id).get();
+        productService.setProductImage(orderDetail.getProduct());
+        return ResponseEntity.ok(orderDetail);
     }
 
     @PutMapping("{id}")
@@ -34,7 +42,9 @@ public class OrderDetailController {
         if (id != orderDetail.getId()) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.save(orderDetail));
+        OrderDetail orderDetail1 = repo.save(orderDetail);
+        productService.setProductImage(orderDetail.getProduct());
+        return ResponseEntity.ok(orderDetail1);
     }
 
     @GetMapping("/order/{id}")
@@ -42,7 +52,10 @@ public class OrderDetailController {
         if (!Orepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(repo.findOrderDetailByOrderId(id));
+        List<OrderDetail> orderDetails = repo.findOrderDetailByOrderId(id);
+        List<Product> products = StreamEx.of(orderDetails).map(OrderDetail::getProduct).toList();
+        productService.setProductImage(products);
+        return ResponseEntity.ok(orderDetails);
     }
 
     @PostMapping()
@@ -50,6 +63,8 @@ public class OrderDetailController {
         if (repo.existsById(orderDetail.getId())) {
             return ResponseEntity.badRequest().build();
         }
+        OrderDetail orderDetail1 = repo.save(orderDetail);
+        productService.saveProductImage(orderDetail1.getProduct());
         return ResponseEntity.ok(repo.save(orderDetail));
     }
 
