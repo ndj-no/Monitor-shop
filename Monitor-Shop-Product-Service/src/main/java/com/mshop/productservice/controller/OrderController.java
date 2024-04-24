@@ -89,6 +89,7 @@ public class OrderController {
         if (!userClient.existsById(order.getUser().getUserId())) {
             return ResponseEntity.notFound().build();
         }
+        order.setUserId(order.getUser().getUserId());
         Order o = orderService.save(order);
         return ResponseEntity.ok(o);
     }
