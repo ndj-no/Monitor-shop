@@ -8,6 +8,7 @@ import com.mshop.pushservice.constant.Utils;
 import com.mshop.pushservice.dto.MailInfo;
 import com.mshop.pushservice.dto.Order;
 import com.mshop.pushservice.dto.OrderDetail;
+import com.mshop.pushservice.dto.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -92,13 +93,14 @@ public class SendMailController {
         List<OrderDetail> list = orderDetailClient.getOrderDetailByOrderId(order.getId());
 
         StringBuilder content = new StringBuilder();
+        User user = userClient.getOne(order.getUserId());
 
         content.append(
                 "<div style=\"width: 50%; margin: auto; min-height: 500px; background-color: whitesmoke; border-radius: 10px;\">\r\n"
                         + "        <h2 style=\"text-align: center; padding: 20px; font-family: Arial, Helvetica, sans-serif;\">"
                         + subtitle + "</h2>\r\n" + "        <br>\r\n"
                         + "        <div style=\"margin-left: 10px; margin-right: 10px;\">\r\n"
-                        + "            <p>Xin chào, " + order.getUser().getName() + " !</p>\r\n"
+                        + "            <p>Xin chào, " + user.getName() + " !</p>\r\n"
                         + "            <br>\r\n" + "            <p>" + title + "</p>\r\n" + "            <hr>");
         for (OrderDetail item : list) {
             content.append(
@@ -120,7 +122,7 @@ public class SendMailController {
                 + "            </div> \r\n" + "        </div>\r\n" + "    </div>");
 
         // message queue: gui message
-        MailInfo mailInfo = new MailInfo(order.getUser().getEmail(), title, content.toString());
+        MailInfo mailInfo = new MailInfo(user.getEmail(), title, content.toString());
         rabbitMQTemplate.convertAndSend(Constants.EMAIL_QUEUE, Utils.convertToJsonString(mailInfo));
     }
 }

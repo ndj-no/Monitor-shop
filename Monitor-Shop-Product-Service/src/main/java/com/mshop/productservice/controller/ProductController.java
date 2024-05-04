@@ -1,9 +1,10 @@
 package com.mshop.productservice.controller;
 
-import com.mshop.productservice.client.FileClient;
+import com.mshop.productservice.dto.event.ProductEvent;
 import com.mshop.productservice.entity.Product;
 import com.mshop.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public class ProductController {
     @Autowired
     ProductService productService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @GetMapping
     public ResponseEntity<List<Product>> getAll() {
@@ -48,7 +51,16 @@ public class ProductController {
             return ResponseEntity.badRequest().build();
         }
         productService.saveProductImage(product);
+        publishProductEvent(product.getProductId(), product.getName());
         return ResponseEntity.ok(productService.save(product));
+    }
+
+    public void publishProductEvent(Long id, String name) {
+        applicationEventPublisher.publishEvent(new ProductEvent()
+                .setProductId(id)
+                .setProductName(name)
+                .setEvent(ProductEvent.Event.CREATED)
+        );
     }
 
     @PutMapping("{id}")

@@ -19,6 +19,6 @@ public class Order implements Serializable{
 	private String phone;
 	private Date orderDate;
 	private int status;
-	
+	private Long userId;
 	private User user;
 }
